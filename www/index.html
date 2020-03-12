@@ -1,92 +1,149 @@
 <!DOCTYPE html>
-<!--
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-     KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
--->
-<html>
-    <head>
-        <!--
-        Customize this policy to fit your own app's needs. For more guidance, see:
-            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
-        Some notes:
-            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
-            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
-            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
-                * Enable inline JS: add 'unsafe-inline' to default-src
-        -->
-        <meta http-equiv="Content-Security-Policy" 
-            content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; 
-            style-src 'self' 'unsafe-inline'; 
-            media-src *; 
-            script-src 'self' 'unsafe-inline';
-            img-src 'self' data: content:;">
-        <meta name="format-detection" content="telephone=no">
-        <meta name="msapplication-tap-highlight" content="no">
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-        <title>Take Pictures</title>
-        <style>
-            #btn{
-                font-size: 1.5rem;
-                line-height: 2.5rem;
-                margin: 1rem;
-            }
-            #msg{
-                border: 1px solid #eee;
-                padding: 1rem;
-                margin: 1rem;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="page">
-            <input type="file" accept="image/*" capture="camera" />
-            <p><img src="img/logo.png" alt="image" id="photo" /></p>
-            <p><button id="btn">Take Picture</button></p>
-            <p id="msg"></p>
-        </div>
-        <script type="text/javascript" src="cordova.js"></script>
-        <script>
-            let app = {
-                init: function(){
-                    document.getElementById('btn').addEventListener('click', app.takephoto);
-                },
-                takephoto: function(){
-                    let opts = {
-                        quality: 80,
-                        destinationType: Camera.DestinationType.FILE_URI,
-                        sourceType: Camera.PictureSourceType.CAMERA,
-                        mediaType: Camera.MediaType.PICTURE,
-                        encodingType: Camera.EncodingType.JPEG,
-                        cameraDirection: Camera.Direction.BACK,
-                        targetWidth: 300,
-                        targetHeight: 400
-                    };
+<html lang="en">
 
-                    navigator.camera.getPicture(app.ftw, app.wtf, opts);
-                },
-                ftw: function(imgURI){
-                    document.getElementById('msg').textContent = imgURI;
-                    document.getElementById('photo').src = imgURI;
 
-                },
-                wtf: function(msg){
-                    document.getElementById('msg').textContent = msg;
-                }
-            };
+<head>
+	<title></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-----MAP--->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+	<script src="https://unpkg.com/leaflet/dist/leaflet-src.js"></script>
+	<script src="https://unpkg.com/esri-leaflet"></script>
+	<link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css">
+	<script src="https://unpkg.com/esri-leaflet-geocoder"></script>
 
-            document.addEventListener('deviceready', app.init);
-        </script>
-    </body>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+	<script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+
+	<script src="https://kit.fontawesome.com/ca8e9033cf.js" crossorigin="anonymous"></script>
+	<!-------CSS---->
+	<link rel="stylesheet" href="css/style.css">
+	<!-----jquery---->
+	<link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css">
+	<script src="jquery/jquery.min.js"></script>
+	<script src="jquery/jquery.mobile-1.4.5.min.js"></script>
+
+</head>
+<body>
+<script>
+              navigator.geolocation.getCurrentPosition(userLocated, locationError);
+			//define function userLocated
+			function userLocated(position) 
+			{
+			  var latitude = position.coords.latitude;
+			  var longitude = position.coords.longitude;
+
+			  //set the view of the map to null specific location
+			  				var mymap = L.map('mapid').setView([latitude, longitude],15);
+					L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+					maxZoom: 24,
+					attribution: 'Map data &copy;'+
+					'<a href="https://www.openstreetmap.org/">OpenStreetMap</a>'+
+					'contributors,<a href="https://creativecommons.org/licenses'+
+					'/by-sa/2.0/">CC-BY-SA</a>,Imagery © <a href="https://'+
+					'www.mapbox.com/">Mapbox</a>',
+					id: 'mapbox.streets-satellite',
+					accessToken:'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYyc'+
+					'XBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'
+					}).addTo(mymap);
+			  
+
+			  
+			  		mymap.setView([latitude, longitude], 15);
+					var marker2 = L.marker([latitude, longitude]).addTo(mymap);
+					marker2.bindPopup("you are here").closePopup();
+					
+								
+					var circle = L.circle([latitude,longitude ], {
+							color: 'red',
+							fillColor: '#f03',
+							fillOpacity: 0.5,
+							radius: 80
+						}).addTo(mymap);
+						circle.bindPopup("you are in this zone");
+			  
+			  //refresh the map to the null specific location view
+			  L.easyButton('fa-refresh', function() 
+				{
+					mymap.setView([latitude, longitude], 13);
+				}).addTo(mymap);
+			  
+			  //click to show the marker with your current location
+			  L.easyButton('fa-home', function() 
+				{
+					mymap.setView([latitude, longitude], 13);
+					var marker = L.marker([latitude, longitude]).addTo(mymap);
+					marker.bindPopup("Your Location").closePopup();
+				}).addTo(mymap);
+
+			  
+			  //search bar to search specific location on the map
+			  var searchControl = L.esri.Geocoding.geosearch().addTo(mymap);
+			  var results = new L.LayerGroup().addTo(mymap);
+			  searchControl.on('results', function(data) 
+				{
+					results.clearLayers();
+					for (var i = data.results.length - 1; i >= 0; i--) 
+					{
+						results.addLayer(L.marker(data.results[i].latlng));
+					}
+				});
+
+			  var geocodeService = L.esri.Geocoding.geocodeService();
+			  mymap.on('click', function(e) 
+				{
+					geocodeService.reverse().latlng(e.latlng).run(function(error, result)
+					{
+						if (error) 
+						{
+							return;
+						}
+						var popLocation = e.latlng;
+						var popup = L.popup()
+						.setLatLng(popLocation)
+						.setContent(result.address.Match_addr)
+						.openOn(mymap);
+					});
+				});
+			}
+			
+			
+			//error code
+			function locationError(error) 
+			{
+				switch (error.code) 
+				{
+					case error.PERMISSION_DENIED:
+					alert("Permission Denied- " + error.message);
+					break;
+					case error.POSITION_UNAVAILABLE:
+					alert("Position Not Available- " + error.message);
+					break;
+					case error.TIMEOUT:
+					alert("Request Time out- " + error.message);
+					break;
+				}
+			}
+
+
+	</script>
+	
+	                 
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-2">
+
+                            </div>
+							<div class="col-lg-8">
+								<div id="mapid" style=" height: 500px;"></div>
+                            </div>
+							<div class="col-lg-2">
+								
+                            </div>
+                        </div>
+						
+                </div>
+	
+	</body>
+
 </html>
